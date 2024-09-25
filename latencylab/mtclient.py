@@ -61,6 +61,8 @@ def ClientWorker(counter):
     while messageNumber <= args.TotalMessagesToSend:
         with socket.socket(sockettype, socket.SOCK_STREAM) as s:
 
+            s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
             messagesSentWithCurrentSocket = 0
 
             if args.Debug:
@@ -70,7 +72,8 @@ def ClientWorker(counter):
                 s.connect(dst)
             except Exception as e:
                 print(f"Failed to connect to server {dst}. Verify that the server process is running and that the connection is allowed throught any NSG(s) and guest OS firewalls.")
-                break
+                time.sleep(0.01)
+                continue
 
             while (messagesSentWithCurrentSocket < args.MessagesPerSocket and messageNumber <= args.TotalMessagesToSend):
                 messagesSentWithCurrentSocket+=1
@@ -94,6 +97,8 @@ def ClientWorker(counter):
 
                 # Get the next message:
                 messageNumber = counter.increment()
+
+            s.close()
 
 print(f"{datetime.now(timezone.utc)} UTC: Starting test")
 ctr = MessageCounter()
