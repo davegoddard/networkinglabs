@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Import the socket module
 import socket
 import time
