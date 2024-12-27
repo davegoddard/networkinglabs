@@ -215,7 +215,7 @@ resource vnet1vm1nic 'Microsoft.Network/networkInterfaces@2023-05-01' = {
       }
     ]
   }
-  dependsOn: [ lb ]
+  dependsOn: [ lb, vnet1vm1nic ]
 }
 
 resource vnet1vm2nic 'Microsoft.Network/networkInterfaces@2023-05-01' = {
@@ -311,7 +311,7 @@ resource vnet1VM1_customScript 'Microsoft.Compute/virtualMachines/extensions@202
     autoUpgradeMinorVersion: true
     settings: {
       fileUris: []
-      commandToExecute: 'wget -P /tmp https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/tcpserver4.py ; wget -P /tmp https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/mtclient.py ; chmod 755 /tmp/*.py'
+      commandToExecute: 'wget -P /usr/local/bin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/tcpserver4.py ; wget -P /usr/local/bin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/mtclient.py ; wget -P /usr/local/sbin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/configure-sshd.sh ; chmod 755 /usr/local/bin/*.py ; chmod 755 /usr/local/sbin/configure-sshd.sh ; /usr/local/sbin/configure-sshd.sh'
     }
   }
 }
@@ -369,7 +369,7 @@ resource vnet1VM2_customScript 'Microsoft.Compute/virtualMachines/extensions@202
     autoUpgradeMinorVersion: true
     settings: {
       fileUris: []
-      commandToExecute: 'wget -P /usr/local/bin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/tcpserver4.py ; wget -P /usr/local/bin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/mtclient.py ; wget -P /usr/local/sbin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/configure-sshd.sh ; chmod 755 /usr/local/bin/*.py ; chmod 755 /usr/local/sbin/configure-sshd.sh'
+      commandToExecute: 'wget -P /usr/local/bin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/tcpserver4.py ; wget -P /usr/local/bin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/mtclient.py ; wget -P /usr/local/sbin https://raw.githubusercontent.com/davegoddard/networkinglabs/refs/heads/main/latencylab/configure-sshd.sh ; chmod 755 /usr/local/bin/*.py ; chmod 755 /usr/local/sbin/configure-sshd.sh ; /usr/local/sbin/configure-sshd.sh'
     }
   }
 }
