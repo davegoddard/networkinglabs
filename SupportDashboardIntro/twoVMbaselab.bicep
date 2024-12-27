@@ -241,7 +241,7 @@ resource vnet1vm2nic 'Microsoft.Network/networkInterfaces@2023-05-01' = {
       }
     ]
   }
-  dependsOn: [ lb. vnet1vm1nic ]
+  dependsOn: [ lb, vnet1vm1nic ]
 }
 
 // Create an availability set
