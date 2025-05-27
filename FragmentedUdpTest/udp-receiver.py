@@ -2,17 +2,12 @@ import socket
 from datetime import datetime, timezone
 import sys
 import hashlib
+import logging
+import os
 
 def generate_md5_hash(input_string):
     md5_hash = hashlib.md5(input_string.encode()).hexdigest()
     return md5_hash
-
-def log(message):
-    timestamp = datetime.now(timezone.utc).strftime('%m-%d-%Y %H:%M:%S')
-    formatted_message = f"{timestamp} UTC: {message}"
-    print(formatted_message)
-    logfile.write(formatted_message + "\n")
-    logfile.flush()  # Ensure it's written immediately
 
 # Check for command-line arguments
 if len(sys.argv) < 3:
@@ -20,17 +15,42 @@ if len(sys.argv) < 3:
     print("Example: python udp-receiver.py 2022 output.log")
     sys.exit(1)
 
+# Parse command-line arguments
 localIP = "0.0.0.0"
 localPort = int(sys.argv[1])
 bufferSize = 2048
 logfile_path = sys.argv[2]
 
-# Open the log file
+# Define custom formatter for UTC timestamps
+class UTCFormatter(logging.Formatter):
+    def formatTime(self, record, datefmt=None):
+        dt = datetime.fromtimestamp(record.created, timezone.utc)
+        return dt.strftime('%m-%d-%Y %H:%M:%S UTC')
+
+# Configure logging
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Remove any existing handlers (to avoid duplicates)
+for handler in logger.handlers[:]:
+    logger.removeHandler(handler)
+
+# Create file handler
 try:
-    logfile = open(logfile_path, "a")
+    file_handler = logging.FileHandler(logfile_path)
+    file_handler.setFormatter(UTCFormatter('%(asctime)s: %(message)s'))
+    logger.addHandler(file_handler)
+    
+    # Create console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(UTCFormatter('%(asctime)s: %(message)s'))
+    logger.addHandler(console_handler)
 except Exception as e:
-    print(f"Error opening log file {logfile_path}: {e}")
+    print(f"Error setting up logging to {logfile_path}: {e}")
     sys.exit(1)
+
+def log(message):
+    logging.info(message)
 
 log(f"Listening on local port {localPort}")
 
@@ -40,7 +60,7 @@ UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 # Bind to address and ip
 UDPServerSocket.bind((localIP, localPort))
 
-log("UDP server up and listening")
+log(f"UDP server up and listening [pid={os.getpid()}]")
  
 
 # Listen for incoming datagrams
