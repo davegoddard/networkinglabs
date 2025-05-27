@@ -35,14 +35,15 @@ logger.setLevel(logging.INFO)
 for handler in logger.handlers[:]:
     logger.removeHandler(handler)
 
-# Create file handler
+# Create handlers
 try:
+    # File handler for log file
     file_handler = logging.FileHandler(logfile_path)
     file_handler.setFormatter(UTCFormatter('%(asctime)s: %(message)s'))
     logger.addHandler(file_handler)
     
-    # Create console handler
-    console_handler = logging.StreamHandler()
+    # Console handler for stdout
+    console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setFormatter(UTCFormatter('%(asctime)s: %(message)s'))
     logger.addHandler(console_handler)
 except Exception as e:
@@ -50,7 +51,7 @@ except Exception as e:
     sys.exit(1)
 
 def log(message):
-    logging.info(message)
+    logger.info(message)
 
 log(f"Listening on local port {localPort}")
 
