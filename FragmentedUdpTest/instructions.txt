@@ -13,6 +13,6 @@ On Client:
 
 On Server:
 
-   Linux OSes: python3 udp-receiver.py 2022
+   Linux OSes: python3 udp-receiver.py 2022 /tmp/udp-receiver.log
 
-   Windows OSes: C:\scripts>python udp-receiver.py 2022
+   Windows OSes: C:\scripts>python udp-receiver.py 2022 c:\temp\udp-receiver.log
