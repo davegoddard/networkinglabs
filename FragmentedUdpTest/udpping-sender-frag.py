@@ -18,6 +18,10 @@ serverAddressPort = (sys.argv[1], int(sys.argv[2]))
 bufferSize = 2048
 totalMessages = 10000000
 packetSize = 1600 # Anything over 1472 will be fragmented with standard Ethernet MTU
+randomStringSize = packetSize - len(str(totalMessages)) - 32 - 3 # subtract the sequence number and the |s
+if randomStringSize < 1:
+    print(f"Total packet size defined too small.")
+    exit()
 
 try:
     logfile = open(sys.argv[3],"a")
@@ -52,9 +56,9 @@ totalSuccess = 0
 i = 1
 while (i <= totalMessages):
 
-    randomstr = generate_random_string(1600)
+    randomstr = generate_random_string(randomStringSize)
     hashstr = generate_md5_hash(randomstr) 
-    message = f"{i}|{hashstr}|{randomstr}"
+    message = f"{i}|{hashstr}|{randomstr}|"
     # Send to server using created UDP socket
     if padmessage == True:
         message = message.ljust(packetSize,"0")
@@ -90,3 +94,4 @@ while (i <= totalMessages):
             print(f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}: No successes detected")
 
 print(f"Sent messages!")
+
