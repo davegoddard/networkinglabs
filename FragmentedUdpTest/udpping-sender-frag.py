@@ -17,6 +17,7 @@ if len(sys.argv) != 4:
 serverAddressPort = (sys.argv[1], int(sys.argv[2]))
 bufferSize = 2048
 totalMessages = 10000000
+packetSize = 1600 # Anything over 1472 will be fragmented with standard Ethernet MTU
 
 try:
     logfile = open(sys.argv[3],"a")
@@ -38,7 +39,9 @@ udpSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 udpSocket.settimeout(1) # timeout ping after one second
 
 # Initialize flow
-message = f"0|{totalMessages}"
+message = f"0|{totalMessages}|"
+if padmessage == True:
+    message = message.ljust(packetSize,"0")
 bytesToSend = str.encode(message)
 udpSocket.sendto(bytesToSend, serverAddressPort)
 
@@ -54,7 +57,7 @@ while (i <= totalMessages):
     message = f"{i}|{hashstr}|{randomstr}"
     # Send to server using created UDP socket
     if padmessage == True:
-        message = message.ljust(1600,"0")
+        message = message.ljust(packetSize,"0")
     bytesToSend = str.encode(message)
 
     sendTime = time.time()
@@ -85,6 +88,5 @@ while (i <= totalMessages):
             print(f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}: Current total successes: {totalSuccess} Total Failures: {totalFailures} Average Latency: {(totalLatency/totalSuccess)*1000:.2f}")
         else:
             print(f"{datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}: No successes detected")
-
 
 print(f"Sent messages!")
